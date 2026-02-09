@@ -15,7 +15,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 
 ### Progression & Engagement
 - [ ] Sistem rebirth/prestige — reset progress untuk permanent multiplier
-- [ ] Daily rewards / login streak
+- [x] Daily rewards / login streak
 - [ ] Quest/mission system (harian & mingguan)
 - [ ] Achievement/badge system
 - [ ] Leaderboard (most coins, deepest dug, rarest treasure found)
@@ -87,3 +87,4 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [x] Underground lighting
 - [x] Custom proximity prompts
 - [x] Coin display dengan format abbreviated
+- [x] Daily rewards / login streak (7-day cycle, 24h cooldown, 48h streak window)
