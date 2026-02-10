@@ -19,11 +19,14 @@
 - Rotasi random pada setiap treasure agar terlihat natural
 - Auto-despawn setelah 60 detik (beserta terrain dummy-nya)
 
-## Sistem Mutasi "Darkness"
-- 5% chance treasure yang spawn memiliki mutasi spesial
-- Efek visual gelap (particle effect) pada treasure yang termutasi
-- Treasure bermutasi bernilai 2x lipat harga jual normal
-- Menambah excitement dan element of surprise
+## Sistem Mutasi (3 Jenis)
+- 3 jenis mutasi: Gold (Uncommon, 8%, 1.5x), Frozen (Uncommon, 6%, 1.3x), Darkness (Rare, 3%, 1.8x)
+- Setiap mutasi memiliki efek visual unik: color override, highlight glow, particle effects, VFX template
+- Gold: warna emas + sparkle particles + highlight gold
+- Frozen: material Ice + warna biru es + highlight biru + Wind VFX
+- Darkness: warna gelap + highlight ungu + Kegelapan VFX
+- Treasure bermutasi bernilai lebih tinggi sesuai multiplier masing-masing
+- Mutasi di-roll secara random saat treasure spawn
 
 ## Sistem Tool (Cangkul)
 - 3 tier Cangkul dengan damage dan speed berbeda

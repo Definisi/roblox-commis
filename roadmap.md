@@ -11,7 +11,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [ ] Tambah lebih banyak jenis Cangkul (4-6 tier tambahan untuk mid-late game progression)
 - [ ] Tambah lebih banyak Pet dengan buff berbeda (damage buff, luck buff, coins buff)
 - [ ] Tambah rarity Mythical untuk end-game treasure ultra-langka
-- [ ] Tambah lebih banyak jenis mutasi selain Darkness (contoh: Golden = 3x harga, Frozen = visual es)
+- [x] Tambah lebih banyak jenis mutasi (Gold 1.5x, Frozen 1.3x, Darkness 1.8x)
 
 ### Progression & Engagement
 - [ ] Sistem rebirth/prestige — reset progress untuk permanent multiplier
@@ -78,7 +78,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [x] Shop system (Cangkul & Pet)
 - [x] Inventory management UI
 - [x] Sell system (jual semua / jual satu)
-- [x] Mutation system (Darkness - 5% chance, 2x harga)
+- [x] Mutation system — 3 jenis: Gold (8%, 1.5x), Frozen (6%, 1.3x), Darkness (3%, 1.8x)
 - [x] Data persistence (auto-save, load on join)
 - [x] Anti-exploit (server-side validation)
 - [x] Notification system

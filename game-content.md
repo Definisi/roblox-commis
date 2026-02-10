@@ -52,7 +52,19 @@ Semakin dalam = HP lebih tinggi + speed lebih lambat = butuh tool dan pet yang l
 |----------|--------|--------|------------|
 | Keranda | Legendary | 100% | 350-650 coins |
 
-**Bonus:** Setiap treasure punya 5% chance menjadi versi "Darkness" (mutasi) yang bernilai **2x lipat**.
+**Bonus:** Setiap treasure punya chance menjadi versi bermutasi dengan efek visual dan harga jual lebih tinggi.
+
+---
+
+## Sistem Mutasi (3 Jenis)
+
+| Mutasi | Rarity | Chance | Multiplier | Efek Visual |
+|--------|--------|--------|------------|-------------|
+| Gold | Uncommon | 8% | 1.5x | Warna emas, highlight gold, sparkle particles, VFX Emas |
+| Frozen | Uncommon | 6% | 1.3x | Warna biru es, material Ice, highlight biru, VFX Wind |
+| Darkness | Rare | 3% | 1.8x | Warna gelap, highlight ungu, VFX Kegelapan |
+
+Mutasi di-roll saat treasure spawn. Treasure bermutasi memiliki efek visual unik dan harga jual dikalikan multiplier.
 
 ---
 
