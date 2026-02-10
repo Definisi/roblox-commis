@@ -10,11 +10,14 @@
 
 ## Sistem Treasure & Reward
 - 30% chance mendapat treasure setiap kali menghancurkan blok tanah
-- 18 jenis treasure unik tersebar di 6 lapisan
-- Sistem rarity: Common, Uncommon, Rare, Epic, Legendary
+- 11 jenis treasure horror-themed tersebar di 6 lapisan (2 per layer, Basalt 1)
+- Sistem rarity: Common, Rare, Epic, Legendary
 - Semakin dalam lapisan, semakin langka dan mahal treasure-nya
-- Treasure muncul sebagai objek 3D yang harus digali lagi untuk diklaim
-- Auto-despawn setelah 60 detik jika tidak diambil
+- Treasure muncul tertanam di tanah — terrain dummy mengisi voxel agar terlihat seperti tanah asli, treasure setengah nongol dari permukaan
+- Highlight hijau saat menggali treasure
+- Invisible hitplate (16x1x16) mencegah klik tembus ke voxel bawah
+- Rotasi random pada setiap treasure agar terlihat natural
+- Auto-despawn setelah 60 detik (beserta terrain dummy-nya)
 
 ## Sistem Mutasi "Darkness"
 - 5% chance treasure yang spawn memiliki mutasi spesial

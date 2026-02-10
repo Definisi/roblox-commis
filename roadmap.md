@@ -30,7 +30,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 ## TODO - Prioritas Sedang
 
 ### Visual & Polish
-- [ ] Tambah variasi visual treasure (model 3D yang lebih detail)
+- [x] Tambah variasi visual treasure (model 3D horror-themed dari Workspace.Items)
 - [ ] Efek visual untuk setiap rarity saat pickup
 - [ ] Background music & sound effects per layer
 - [ ] Particle effects yang lebih beragam per layer
@@ -72,7 +72,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 ## Sudah Selesai
 
 - [x] Core digging mechanic dengan 6 lapisan
-- [x] 18 jenis treasure dengan 5 rarity levels
+- [x] 11 jenis treasure horror-themed dengan 4 rarity levels (Common, Rare, Epic, Legendary)
 - [x] 3 tier Cangkul tools
 - [x] 2 jenis Pet dengan speed buff
 - [x] Shop system (Cangkul & Pet)
