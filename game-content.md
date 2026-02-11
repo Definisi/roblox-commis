@@ -142,6 +142,49 @@ Koleksi 11 treasure yang melacak penemuan pemain:
 
 ---
 
+## Tempa (Upgrade/Forging System)
+
+Pemain bisa meng-upgrade Cangkul dan Aksesoris di Pandai Besi (Anvil) menggunakan coins + treasure material.
+
+### Tempa Cangkul (Max +10)
+
+| Tool | Base Dmg | Base Spd | +Dmg/Lvl | +Spd/Lvl | Max Dmg @+10 | Max Spd @+10 |
+|------|----------|----------|----------|----------|-------------|-------------|
+| Cangkul Karatan | 10 | 1.0 | +2 | +0.05 | 30 | 1.50 |
+| Cangkul Petani | 15 | 1.2 | +3 | +0.06 | 45 | 1.80 |
+| Cangkul Tulang | 25 | 1.5 | +5 | +0.08 | 75 | 2.30 |
+
+### Biaya Tempa Cangkul
+
+| Level | Coins | Material |
+|-------|-------|----------|
+| +1 | 50 | 2x Paku Karatan |
+| +2 | 100 | 3x Paku Karatan |
+| +3 | 200 | 2x Tulang Iga |
+| +4 | 350 | 3x Tulang Iga |
+| +5 | 600 | 2x Boneka Sihir Hitam |
+| +6 | 1,000 | 2x Telur Dipaku |
+| +7 | 1,500 | 2x Foto Buram |
+| +8 | 2,200 | 1x Kertas Ilmu Hitam |
+| +9 | 3,000 | 2x Kertas Judi |
+| +10 | 4,000 | 1x Gigi Emas |
+
+### Tempa Aksesoris (Max +5)
+
+Setiap level menambah +30% dari base buff. Formula: `totalBuff = baseBuff × (1 + level × 0.3)`
+
+| Level | Multiplier | Coins | Material |
+|-------|-----------|-------|----------|
+| +1 | 1.3x | 100 | 2x Tulang Tangan |
+| +2 | 1.6x | 250 | 2x Tengkorak |
+| +3 | 1.9x | 500 | 1x Boneka Sihir Hitam |
+| +4 | 2.2x | 1,000 | 1x Kertas Ilmu Hitam |
+| +5 | 2.5x | 2,000 | 1x Kertas Judi |
+
+Material dikonsumsi dari tas pemain (inventory treasure). Prioritas: non-favorited dulu.
+
+---
+
 ## Rarity System
 
 | Rarity | Warna | Frekuensi |

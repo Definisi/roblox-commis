@@ -61,6 +61,22 @@
 - Buff stack secara aditif (contoh: 3 item damage = +45% damage)
 - Equip/unequip melalui inventory UI
 
+## Sistem Tempa (Upgrade/Forging)
+- Pandai Besi (Anvil) di dunia game — mendekat untuk membuka UI Tempa via ProximityPrompt
+- Upgrade Cangkul: max +10 level, setiap level menambah damage dan speed flat
+  - Cangkul Karatan: +2 dmg / +0.05 spd per level (max: 30 dmg, 1.50 spd)
+  - Cangkul Petani: +3 dmg / +0.06 spd per level (max: 45 dmg, 1.80 spd)
+  - Cangkul Tulang: +5 dmg / +0.08 spd per level (max: 75 dmg, 2.30 spd)
+- Upgrade Aksesoris: max +5 level, setiap level menambah 30% dari base buff
+  - Level 0 = 100% base, Level 5 = 250% base (2.5x semua buff)
+- Biaya upgrade: coins + treasure material dari tas pemain
+  - Cangkul: mulai dari 50 coins + 2x Paku Karatan (lvl 1) hingga 4000 coins + 1x Gigi Emas (lvl 10)
+  - Aksesoris: mulai dari 100 coins + 2x Tulang Tangan (lvl 1) hingga 2000 coins + 1x Kertas Judi (lvl 5)
+- Material dikonsumsi dari tas (inventory treasure), prefer non-favorited
+- UI menampilkan preview stats (sebelum → sesudah), biaya, ketersediaan material
+- Notifikasi berhasil/gagal tempa
+- Data tempa tersimpan permanen
+
 ## Sistem Bestiary
 - Ensiklopedia treasure yang melacak item yang sudah pernah ditemukan pemain
 - 11 slot treasure tersusun berdasarkan layer

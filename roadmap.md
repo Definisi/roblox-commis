@@ -55,7 +55,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 ## TODO - Prioritas Rendah (Nice to Have)
 
 ### Advanced Systems
-- [ ] Enchantment/upgrade system untuk tools
+- [x] ~~Enchantment/upgrade system untuk tools~~ → Sudah ada: Tempa system (Cangkul +10, Accessory +5)
 - [ ] Pet leveling system
 - [ ] Crafting system (combine treasures)
 - [ ] Private mine/area untuk setiap pemain
@@ -96,3 +96,4 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [x] TopbarPlus — tombol "Hadiah Harian" di topbar untuk buka daily reward kapan saja
 - [x] Lokalisasi Bahasa Indonesia — seluruh teks GUI dalam Bahasa Indonesia
 - [x] Container sorting — item yang dipakai tampil pertama, lalu urut rarity tertinggi
+- [x] Tempa (forging/upgrade) system — upgrade Cangkul (+10 max) dan Accessory (+5 max) di Pandai Besi dengan coins + treasure material
