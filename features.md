@@ -54,11 +54,35 @@
 - Konfirmasi pembelian dengan detail stats dan harga
 - Validasi server-side (anti-cheat untuk pembelian)
 
+## Sistem Accessory
+- 2 set aksesoris: Tengkorak (Damage +15% per item), Vampir (Speed +15% per item)
+- 5 slot per set: Outfit, Kalung, Aksesoris, Headwear, Eyewear
+- Visual equip — outfit mengubah pakaian karakter, aksesoris lain ditambahkan ke karakter
+- Buff stack secara aditif (contoh: 3 item damage = +45% damage)
+- Equip/unequip melalui inventory UI
+
+## Sistem Bestiary
+- Ensiklopedia treasure yang melacak item yang sudah pernah ditemukan pemain
+- 11 slot treasure tersusun berdasarkan layer
+- Item yang belum ditemukan tampil redup dengan nama "???"
+- Filter berdasarkan layer (All, Mud, Sand, Limestone, Ground, Slate, Basalt)
+- Panel detail: nama, rarity, harga jual, status penemuan
+- Data penemuan tersimpan permanen (DiscoveredItems)
+
+## Daily Reward
+- Sistem reward harian dengan siklus 7 hari
+- Streak system: bonus meningkat setiap hari berturut-turut (50/75/100/150/200/300/500 coins)
+- Cooldown 24 jam antar klaim, streak reset jika lebih dari 48 jam tidak klaim
+- UI popup otomatis saat login
+
 ## Inventory & UI
 - Menu inventory untuk Cangkul (lihat stats, equip/switch)
 - Menu inventory untuk Pet (lihat buff, equip/unequip, storage info)
+- Menu inventory untuk Accessory (lihat buff, equip/unequip per slot)
+- Menu Bestiary (koleksi treasure, filter layer, detail panel)
 - Notifikasi popup saat mendapat treasure baru (dengan stacking untuk item sama)
 - Notifikasi hasil penjualan
+- Notifikasi gagal beli (uang tidak cukup / sudah dimiliki) untuk semua jenis shop
 - HP bar dan charge bar saat menggali
 - Target info (nama layer/treasure yang sedang ditarget)
 
@@ -72,11 +96,17 @@
 - Support multiple dialog options dan response choices
 - Interaksi berbasis proximity
 
+## Ordered Loader
+- Sistem loading terurut saat pemain join: Cangkul → Pet → Accessory → Treasure
+- Setiap fase menunggu fase sebelumnya selesai (menggunakan attribute signals)
+- Timeout 15 detik per fase untuk mencegah hang
+- Memastikan semua equipment terpasang sebelum pemain mulai bermain
+
 ## Data Persistence
 - Auto-save setiap 60 detik
 - Save saat pemain keluar
 - Save saat server shutdown
-- Data yang tersimpan: coins, tools yang dimiliki, pet yang dimiliki, treasure di inventory, equipment yang sedang dipakai
+- Data yang tersimpan: coins, tools, pets, accessories, treasure, equipped items, discovered items, daily reward streak
 
 ## Anti-Exploit
 - Semua kalkulasi HP dan damage dilakukan di server

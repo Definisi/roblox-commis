@@ -88,3 +88,7 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [x] Custom proximity prompts
 - [x] Coin display dengan format abbreviated
 - [x] Daily rewards / login streak (7-day cycle, 24h cooldown, 48h streak window)
+- [x] Accessory system — 2 set (Tengkorak/Vampir), 5 slot, visual equip + buff
+- [x] Bestiary — treasure encyclopedia dengan layer filter, discovery tracking
+- [x] Ordered loader — sequential player init (Cangkul → Pet → Accessory → Treasure)
+- [x] Purchase failure notifications — semua shop menampilkan notifikasi "Not enough coins" / "Already owned"
