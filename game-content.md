@@ -89,6 +89,59 @@ Pet mengikuti pemain dan memberikan buff otomatis saat diequip.
 
 ---
 
+## Accessories (10 Items — 2 Set)
+
+### Set Tengkorak (Damage +15% per item)
+| Accessory | Slot | Harga | Rarity |
+|-----------|------|-------|--------|
+| Outfit Tengkorak | Outfit | 300 coins | Uncommon |
+| Kalung Tengkorak | Kalung | 200 coins | Common |
+| Aksesoris Tengkorak | Aksesoris | 250 coins | Common |
+| Topeng Tengkorak | Headwear | 400 coins | Rare |
+| Kain Kepala Tengkorak | Eyewear | 350 coins | Uncommon |
+
+### Set Vampir (Speed +15% per item)
+| Accessory | Slot | Harga | Rarity |
+|-----------|------|-------|--------|
+| Outfit Vampir | Outfit | 300 coins | Uncommon |
+| Kalung Vampir | Kalung | 200 coins | Common |
+| Aksesoris Vampir | Aksesoris | 250 coins | Common |
+| Topi Vampir | Headwear | 400 coins | Rare |
+| Kacamata Vampir | Eyewear | 350 coins | Uncommon |
+
+**5 slot equip:** Outfit, Kalung, Aksesoris, Headwear, Eyewear. Buff stack aditif (5 item = +75%).
+Outfit mengubah pakaian karakter, aksesoris lain ditambahkan sebagai Accessory ke karakter.
+
+---
+
+## Daily Reward (7-Day Cycle)
+
+| Hari | Reward |
+|------|--------|
+| Day 1 | 50 coins |
+| Day 2 | 75 coins |
+| Day 3 | 100 coins |
+| Day 4 | 150 coins |
+| Day 5 | 200 coins |
+| Day 6 | 300 coins |
+| Day 7 | 500 coins (bonus) |
+
+- Cooldown 24 jam antar klaim
+- Streak reset jika tidak klaim lebih dari 48 jam
+- Siklus berulang setelah hari ke-7
+
+---
+
+## Bestiary (Treasure Encyclopedia)
+
+Koleksi 11 treasure yang melacak penemuan pemain:
+- Item yang belum ditemukan tampil redup dengan nama "???"
+- Filter berdasarkan layer: All, Mud, Sand, Limestone, Ground, Slate, Basalt
+- Panel detail menampilkan: nama, rarity, range harga jual, status penemuan
+- Data penemuan tersimpan permanen di DataStore
+
+---
+
 ## Rarity System
 
 | Rarity | Warna | Frekuensi |

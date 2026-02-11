@@ -1,7 +1,7 @@
 # Roadmap & TODO
 
 ## Status Saat Ini
-Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membeli tool & pet, dan menjual loot. Semua sistem utama berjalan dengan data persistence.
+Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membeli tool/pet/accessory, equip accessories untuk buff, mengecek koleksi di Bestiary, dan menjual loot. Semua sistem utama berjalan dengan data persistence dan ordered loading.
 
 ---
 
