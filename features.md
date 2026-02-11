@@ -80,6 +80,7 @@
 - Menu inventory untuk Pet (lihat buff, equip/unequip, storage info)
 - Menu inventory untuk Accessory (lihat buff, equip/unequip per slot)
 - Menu Bestiary (koleksi treasure, filter layer, detail panel)
+- Sorting otomatis di semua container: item yang dipakai tampil pertama, lalu urut rarity tertinggi
 - Notifikasi popup saat mendapat treasure baru (dengan stacking untuk item sama)
 - Notifikasi hasil penjualan
 - Notifikasi gagal beli (uang tidak cukup / sudah dimiliki) untuk semua jenis shop
