@@ -91,4 +91,8 @@ Core gameplay sudah playable. Pemain bisa menggali, mengumpulkan treasure, membe
 - [x] Accessory system — 2 set (Tengkorak/Vampir), 5 slot, visual equip + buff
 - [x] Bestiary — treasure encyclopedia dengan layer filter, discovery tracking
 - [x] Ordered loader — sequential player init (Cangkul → Pet → Accessory → Treasure)
-- [x] Purchase failure notifications — semua shop menampilkan notifikasi "Not enough coins" / "Already owned"
+- [x] Purchase failure notifications — semua shop menampilkan notifikasi "Koin tidak cukup" / "Sudah dimiliki"
+- [x] Equip/unequip notifications — Cangkul, Pet, dan Accessory semua menampilkan notifikasi saat dipakai/dilepas
+- [x] TopbarPlus — tombol "Hadiah Harian" di topbar untuk buka daily reward kapan saja
+- [x] Lokalisasi Bahasa Indonesia — seluruh teks GUI dalam Bahasa Indonesia
+- [x] Container sorting — item yang dipakai tampil pertama, lalu urut rarity tertinggi

@@ -74,6 +74,7 @@
 - Streak system: bonus meningkat setiap hari berturut-turut (50/75/100/150/200/300/500 coins)
 - Cooldown 24 jam antar klaim, streak reset jika lebih dari 48 jam tidak klaim
 - UI popup otomatis saat login
+- Tombol "Hadiah Harian" di topbar (TopbarPlus v3) untuk membuka popup kapan saja
 
 ## Inventory & UI
 - Menu inventory untuk Cangkul (lihat stats, equip/switch)
@@ -84,6 +85,7 @@
 - Notifikasi popup saat mendapat treasure baru (dengan stacking untuk item sama)
 - Notifikasi hasil penjualan
 - Notifikasi gagal beli (uang tidak cukup / sudah dimiliki) untuk semua jenis shop
+- Notifikasi saat ganti Cangkul, equip/unequip Pet, equip/unequip Accessory
 - HP bar dan charge bar saat menggali
 - Target info (nama layer/treasure yang sedang ditarget)
 
@@ -115,6 +117,10 @@
 - Validasi jarak (range check) untuk mencegah teleport hack
 - Anti-drop tool system
 - Server-side purchase validation
+
+## Lokalisasi
+- Seluruh teks GUI menggunakan Bahasa Indonesia
+- Tombol, notifikasi, prompt pembelian, dan info panel semua dalam Bahasa Indonesia
 
 ## Quality of Life
 - Underground lighting otomatis (lampu mengikuti pemain)
