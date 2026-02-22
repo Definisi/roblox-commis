@@ -124,7 +124,7 @@ local DailyRewardConfig = {
 MutationConfig.Mutations = {
     Racun = { id=1, chance=0.05, sellMultiplier=1.3, vfxTemplate="Racun", color=Green(50,200,50), Uncommon },
     Darah = { id=2, chance=0.03, sellMultiplier=1.5, vfxTemplate="Darah", color=Red(200,30,30), Rare },
-    SihirHitam = { id=3, chance=0.02, sellMultiplier=2.0, vfxTemplate="SihirHitam", color=Purple(100,0,180), Epic },
+    SihirHitam = { id=3, chance=0.02, sellMultiplier=2.0, vfxTemplate="Sihir Hitam", color=Purple(100,0,180), Epic },
 }
 -- Mutation chance is additive with player accessory buffs (base + AccessoryBuff_mutasi_X / 100)
 ```

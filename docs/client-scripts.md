@@ -12,7 +12,7 @@ Inside each Cangkul tool template. All 3 copies are identical.
   - If valid target in range:
     - Show TargetInfo (layer name or item name)
     - On new target: InvokeServer GetVoxelHP for initial HP display
-    - If mouseDown: accumulate digProgress (dt * toolSpeed * petBuff * (1 + accSpeedBuff) / voxelSpeed)
+    - If mouseDown: accumulate digProgress (dt * toolSpeed * petBuff * (1 + accSpeedBuff/100) / voxelSpeed)
     - Progress >= 1: fire DigEvent or RewardDigEvent, spawn particles, camera shake
   - Track currentVoxelSpeed from server responses
 - Reward highlighting: Highlight instance on reward model while digging
@@ -62,7 +62,7 @@ Routes ProximityPrompt triggers to purchase UIs.
 ---
 
 ## HotbarClient (`StarterGui.HotbarGui.HotbarClient`) [LocalScript]
-Custom hotbar replacing the default Roblox Backpack.
+Custom hotbar replacing the default Roblox Backpack. Requires: ViewportIcon.
 
 **Setup:**
 - Disables default Backpack (`StarterGui:SetCoreGuiEnabled(CoreGuiType.Backpack, false)`)
@@ -76,6 +76,9 @@ Custom hotbar replacing the default Roblox Backpack.
 - Rarity color on Arrow ImageColor3 and RarityStroke
 - MutationBadge visible for mutated items
 - SelectedHighlight visible on equipped slot
+- ViewportFrame per slot: 3D model preview using ViewportIcon.Setup()
+  - Slot 1: shows current Cangkul model (tracked via cangkulToolId state variable)
+  - Slots 2-9: shows treasure item models or cleared when empty
 
 **Input:**
 - Number keys 1-9: equip/unequip tool in that slot (with gameProcessed check)
@@ -85,10 +88,17 @@ Custom hotbar replacing the default Roblox Backpack.
 **Equip flow:**
 - Calls humanoid:UnequipTools() then task.wait() then humanoid:EquipTool(target)
 - Tracks selectedSlot state, synced with Character ChildAdded/ChildRemoved events
+- Self-healing: if tool not found for a slot, clears stale slotTools data and hides the slot
+
+**Auto-cleanup (proactive):**
+- `cleanupDestroyedTool(onlyID)` — clears slotTools, cachedData.treasures, cachedData.hotbarSlots for destroyed item, resets selectedSlot if needed, calls updateAllSlots()
+- `watchContainerForDestroys(container)` — connects ChildRemoved on Backpack and Character; on removal, task.defer checks if tool.Parent == nil (destroyed, not moved) → calls cleanupDestroyedTool
+- Hotbar slots auto-disappear immediately when Tools are destroyed (sell, tempa material consume, etc.) — no click needed
 
 **Data sync:**
-- Listens to CangkulInventoryEvent for Cangkul slot updates (slot 1)
-- Listens to TreasureInventoryEvent for "SyncBag" (rebuild slots 2-9) and "ItemPickup" (add new item to first empty slot)
+- Listens to CangkulInventoryEvent for Cangkul slot updates (slot 1, updates cangkulToolId state)
+  - "Sync" and "EquipResult" events both update cangkulToolId with toolData.id
+- Listens to TreasureInventoryEvent for "SyncBag" (rebuild slots 2-9, reset selectedSlot if invalid) and "ItemPickup" (add new item to first empty slot, sync cachedData.hotbarSlots)
 - Initial sync via task.delay(3) to wait for PlayerSetup completion
 
 ---
@@ -100,3 +110,22 @@ Adds "Hadiah Harian" (Daily Reward) button to the Roblox topbar using TopbarPlus
 - Creates icon with label "Hadiah Harian" and gift image
 - On click: fires DailyRewardEvent "RequestShow" to server, deselects immediately
 - Server responds with "ShowReward" → DailyRewardClient handles the popup
+
+---
+
+## AdminPanelClient (`StarterGui.AdminPanel.AdminPanelClient`) [LocalScript]
+Admin panel frontend. Auth: `GetRankInGroup(35484105) >= 2`, non-admins get panel destroyed.
+
+**Keybind:** Semicolon (`;`) toggles `AdminPanel.Enabled`
+
+**Tab-based UI** (3 tabs like ImGui):
+- **Tab "Server Luck"**: ON/OFF toggle, multiplier selector (x2/x4/x8), duration selector (15m/30m/1h/2h), Apply/Reset buttons. Status shows active multiplier + time remaining.
+- **Tab "Cari Pemain"**: search box, player header (image+name+status), 6 category sub-tabs (Info/Cangkul/Pets/Aksesoris/Tas/Tempa). Grid container (left) with clickable items + Selected panel (right) with ViewportFrame 3D preview + stats. Matches InventarisFrame style.
+- **Tab "Ban & Kick"**: target display (from lookup), ban buttons (Perma/1 Bulan/1 Tahun/Unban), misc buttons (Kick/TP ke Admin/TP ke Pemain). Feedback label shows action results.
+
+**Self-protection:** Server blocks self-ban and self-kick with error message.
+
+**Periodic sync:** Every 5s (when panel visible) fires "Sync" → updates luck status + player count.
+
+## ServerLuckIndicator (`StarterGui.ServerLuckGui.ServerLuckIndicator`) [LocalScript]
+Shows ServerLuck multiplier to ALL players (bottom-right, above coins). Hidden when x1, visible when active. Color-coded: green (x2), purple (x4), gold (x8). Listens to `workspace.ServerLuckMultiplier` attribute.

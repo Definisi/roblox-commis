@@ -19,7 +19,11 @@ ReplicatedStorage
 │   └── Utils [ModuleScript]
 ├── UIUtils/
 │   ├── ChangeColor [ModuleScript]
+│   ├── ViewportIcon [ModuleScript]
 │   └── RarityColors/ (Color3Values: Common, Uncommon, Rare, Epic, Legendary, Mythical)
+├── IconModels/
+│   ├── Treasures/ ("3001"-"3011" Models, stripped of Register/Terrain/Block)
+│   └── Cangkuls/ ("1"-"3" Models, stripped of DigClient script)
 ├── Events/
 │   ├── DigEvent [RemoteEvent]
 │   ├── RewardDigEvent [RemoteEvent]
@@ -35,7 +39,8 @@ ReplicatedStorage
 │   ├── DailyRewardEvent [RemoteEvent]
 │   ├── BestiaryEvent [RemoteEvent]
 │   ├── TreasureInventoryEvent [RemoteEvent]
-│   └── TempaEvent [RemoteEvent]
+│   ├── TempaEvent [RemoteEvent]
+│   └── AdminEvent [RemoteEvent]
 ├── DialogModule [ModuleScript]
 └── Topbarplus/
     └── Icon [ModuleScript] (TopbarPlus v3 library)
@@ -57,7 +62,8 @@ ServerScriptService
 │   ├── ChatCommands [Script] (commented out)
 │   ├── DailyRewardServer [Script]
 │   ├── TreasureInventoryServer [Script]
-│   └── TempaServer [Script]
+│   ├── TempaServer [Script]
+│   └── AdminPanelServer [Script]
 └── Systems/
     ├── DataSave [ModuleScript]
     ├── InventoryTreasure [ModuleScript]
@@ -114,27 +120,50 @@ StarterGui
 ├── TempaGui/ [ScreenGui] Enabled=false, ResetOnSpawn=false
 │   ├── TempaClient [LocalScript]
 │   └── MainFrame [Frame] (Arrow, Header/Title+Close, TabBar, ItemList, UpgradePanel)
-├── dialog/ (NPC dialog system)
-└── (deleted: CedGoInventory)
+├── BuffsGui/ [ScreenGui] IgnoreGuiInset=true, DisplayOrder=5, ResetOnSpawn=false
+│   ├── BuffsClient [LocalScript]
+│   └── MainFrame [Frame] AutomaticSize=Y, UIListLayout (dynamic buff rows)
+├── AdminPanel/ [ScreenGui] Enabled=false, ResetOnSpawn=false
+│   ├── AdminPanelClient [LocalScript]
+│   └── Main [Frame] (Exit, Content: Status, Commands/ServerLuck, LookUp, PlayerLookUp)
+├── DialogueGUI/ [ScreenGui] DisplayOrder=100, ResetOnSpawn=false (cinematic dialogue system)
+│   ├── CinematicTop [Frame] (black letterbox bar, top)
+│   ├── CinematicBottom [Frame] (black letterbox bar, bottom)
+│   ├── DialogueBox [Frame] (dark semi-transparent, UICorner, UIPadding)
+│   │   ├── SpeakerName [TextLabel]
+│   │   ├── DialogueText [TextLabel]
+│   │   └── SkipHint [TextLabel] "[Spasi] Lewati >"
+│   ├── ResponseFrame [Frame] (UIListLayout, choice buttons spawned at runtime)
+│   ├── DialogueUtils [ModuleScript] (shared utility: cinematic, typewriter, camera, choices)
+│   ├── TemplateProximity [LocalScript] (Petani dialogue)
+│   ├── WargaDialogue [LocalScript] (Warga NPC — graveyard lore/tips)
+│   ├── PetSellerDialogue [LocalScript] (Penjual Peliharaan NPC — pet info)
+│   ├── GojekJametDialogue [LocalScript] (Driver Gojek + Jamet — 3-way dialogue, kingdom rumors)
+│   └── PociDialogue [LocalScript] (Poci cat — random meow interaction)
+└── (deleted: CedGoInventory, dialog)
 
 workspace
 ├── Voxel/ [Folder] (720 pre-placed surface Parts at Y=1584, 36x24 grid with gaps)
 ├── Rewards/ [Folder] (populated at runtime with reward Models)
-├── VFX/
+├── Efek Mutasi/
 │   ├── Racun [ParticleEmitter] (Poison mutation VFX, green)
 │   ├── Darah [Attachment] (Blood mutation VFX, red, 2 emitters)
-│   └── SihirHitam [ParticleEmitter] (Black Magic mutation VFX, purple)
+│   └── Sihir Hitam [ParticleEmitter] (Black Magic mutation VFX, purple)
 ├── Assets/
 │   ├── Cangkul/ (display models with Register + ProximityPrompt "CangkulPurchase")
 │   ├── Pets/ (display models with Register + ProximityPrompt "PetPurchase")
 │   └── Cursor (3D cursor part)
 ├── Equip/
-│   ├── Tengkorak (rig display, Torso ProximityPrompt "AccessoryPurchase" ObjectText="Baju Tengkorak")
-│   ├── Vampire (rig display, Torso ProximityPrompt "AccessoryPurchase" ObjectText="Baju Vampir")
-│   ├── 8x floating BaseParts (Kalung/Sabuk/Topi/Topeng per set, each with ProximityPrompt)
+│   ├── Tengkorak (rig display, Torso ProximityPrompt "AccessoryPurchase" Custom style, ObjectText="Baju Tengkorak")
+│   ├── Vampire (rig display, Torso ProximityPrompt "AccessoryPurchase" Custom style, ObjectText="Baju Vampir")
+│   ├── 8x floating BaseParts (Kalung/Sabuk/Topi/Topeng per set, each with ProximityPrompt Custom style)
 │   ├── Set Tengkorak/ (Folder in equip area)
 │   └── Set Vampir/ (Folder in equip area)
-├── Anvil [Part] (ProximityPrompt "TempaPurchase", ActionText="Tempa", ObjectText="Pandai Besi")
+├── Anvil [Part] (ProximityPrompt "TempaPurchase" Custom style, ActionText="Tempa", ObjectText="Pandai Besi")
+├── Warga [Model] (NPC — Torso/DialoguePrompt ProximityPrompt, Custom style)
+├── Penjual Peliharaan [Model] (NPC — Torso/DialoguePrompt ProximityPrompt, Custom style)
+├── Driver gojek [Model] (NPC — Torso/DialoguePrompt ProximityPrompt, Custom style)
+├── Poci [Model] (Cat NPC — Meshes/poci/DialoguePrompt ProximityPrompt, Custom style)
 └── Location/Surface/Spawn (teleport spawn part)
 ```
 
@@ -156,14 +185,15 @@ STARTUP:
 
 DIGGING TERRAIN:
   DigClient (in tool) → Heartbeat raycast → hit invisible Part in Voxel/
-    → Hold click → charge bar fills (cycle = voxelSpeed / (toolSpeed * petBuff * (1 + accSpeedBuff)))
+    → Hold click → charge bar fills (cycle = voxelSpeed / (toolSpeed * petBuff * (1 + accSpeedBuff/100)))
     → Full charge → DigEvent:FireServer(partPos, partSize)
   DigServer → validate range, timing → apply damage to hpTracker[key]
     → HP <= 0:
       → clearTerrain (WriteVoxels Air)
       → VoxelEngine.RemovePosition() + Part:Destroy()
       → VoxelEngine.GenerateBelow() (spawn +3 below for ALL columns)
-      → spawnChance = 30% * (1 + luckBuff/100) → spawnReward(pos, layerName, player)
+      → bag full check (skip spawn if #Treasures >= 20)
+      → spawnChance = 30% * (1 + luckBuff/100) * ServerLuckMultiplier → spawnReward(pos, layerName, player)
         → pickReward() by weighted chance
         → Roll mutations: Racun(5%+buff), Darah(3%+buff), SihirHitam(2%+buff) — first hit wins
     → HP > 0: FireClient(hp, maxHP, speed)
@@ -190,6 +220,16 @@ CUSTOM INVENTORY + HOTBAR:
     → Sell single/batch, favorite toggle, hotbar assign/remove
     → All actions via TreasureInventoryEvent → TreasureInventoryServer
     → UI cloned from PetsFrame style (same Arrow pattern, UIStroke, colors)
+
+ADMIN PANEL:
+  AdminPanelClient → GetRankInGroup(35484105) >= 2? No → destroy panel. Yes → keybind (;) toggles
+  ServerLuck: admin clicks x2/x4/x8 + time buttons → AdminEvent "SetLuck" → server sets workspace attr
+    → DigServer reads workspace.ServerLuckMultiplier in spawnChance calc
+    → Heartbeat: auto-reset to 1 when timer expires
+  PlayerLookup: search name → online=DataSave cache, offline=DataStore GetAsync
+  Ban: BanList_v1 DataStore, checked on PlayerAdded, perma/1mo/1yr/unban
+  Kick/TP: standard player operations, server-side auth on every request
+  Sync: client polls every 5s for multiplier/timer/playercount
 
 SHOPS:
   ProximityPrompt triggers → PurchasePromptHandler routes to UI
@@ -234,8 +274,11 @@ TEMPA (FORGING/UPGRADE):
 | CangkulInventoryEvent | Both | "RequestSync" / "Sync" / "Equip" |
 | PetPurchaseEvent | Client→Server | "Purchase", petName |
 | PetPurchaseEvent | Server→Client | "PurchaseResult", {success, reason?, petName?, newCoins?} |
-| PetInventoryEvent | Both | "RequestSync" / "Sync" / "Equip" / "Unequip" |
-| PetEvent | Both | "PetSpawned" / "EquipPet" / "UnequipPet" / "BuyPet" |
+| PetInventoryEvent | Client→Server | "RequestSync" / "Equip" (petId) / "Unequip" (petId) |
+| PetInventoryEvent | Server→Client | "Sync" {inventory, equipped: {number}, maxEquip, maxStorage} |
+| PetInventoryEvent | Server→Client | "EquipResult" / "UnequipResult" {name} |
+| PetInventoryEvent | Server→Client | "SlotFull" (when all 3 slots occupied) |
+| PetEvent | Legacy | (removed handlers, kept event for compatibility) |
 | AccessoryPurchaseEvent | Client→Server | "Purchase", accName |
 | AccessoryPurchaseEvent | Server→Client | "PurchaseResult", {success, reason?, accName?, newCoins?} |
 | AccessoryInventoryEvent | Both | "RequestSync" / "Sync" / "Equip" / "Unequip" |
@@ -260,6 +303,16 @@ TEMPA (FORGING/UPGRADE):
 | TempaEvent | Client→Server | "TempaCangkul", toolId |
 | TempaEvent | Client→Server | "TempaAccessory", accId |
 | TempaEvent | Server→Client | "TempaResult", {success, reason?, type?, id?, name?, newLevel?, newCoins?} |
+| AdminEvent | Client→Server | "SetLuck", {multiplier, duration} |
+| AdminEvent | Client→Server | "ResetLuck", {} |
+| AdminEvent | Client→Server | "LookupPlayer", {name} |
+| AdminEvent | Client→Server | "Kick", {name} |
+| AdminEvent | Client→Server | "TpToAdmin"/"TpToPlayer", {name} |
+| AdminEvent | Client→Server | "Ban", {name, duration: "perma"/"1mo"/"1yr"} |
+| AdminEvent | Client→Server | "Unban", {name} |
+| AdminEvent | Client→Server | "Sync", {} |
+| AdminEvent | Server→Client | "LookupResult", {found, online, name, userId, coins, ...} |
+| AdminEvent | Server→Client | "SyncResult", {multiplier, timeRemaining, playerCount} |
 
 ## Grid System
 - Cell size: 16 studs

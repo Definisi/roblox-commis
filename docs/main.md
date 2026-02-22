@@ -8,12 +8,12 @@ Terrain-based digging game. Players dig voxel terrain with Cangkul tools, collec
 |------|----------|
 | [architecture.md](architecture.md) | Game flow, grid system, events, instances tree |
 | [configs.md](configs.md) | Config, ItemConfig, ToolConfig, PetConfig, AccessoryConfig, MutationConfig, DailyRewardConfig, TempaConfig, GameEnum |
-| [server-scripts.md](server-scripts.md) | DigServer, VoxelEngine, VoxelEngineBootstrap, PlayerSetup, CangkulShopServer, SellServer, PetShopServer, AccessoryShopServer, PetDisplayBob, PlayerLighting, ToolSlotManager, PetSystemBootstrap, ChatCommands, DailyRewardServer, TreasureInventoryServer, TempaServer |
+| [server-scripts.md](server-scripts.md) | DigServer, VoxelEngine, VoxelEngineBootstrap, PlayerSetup, CangkulShopServer, SellServer, PetShopServer, AccessoryShopServer, PetDisplayBob, PlayerLighting, ToolSlotManager, PetSystemBootstrap, ChatCommands, DailyRewardServer, TreasureInventoryServer, TempaServer, AdminPanelServer |
 | [systems.md](systems.md) | DataSave, InventoryTreasure, PetSystem |
-| [client-scripts.md](client-scripts.md) | DigClient, PetClient, ToolSlotClient, CursorClient, PurchasePromptHandler, TopbarClient, HotbarClient |
-| [ui-scripts.md](ui-scripts.md) | UIController, NotificationClient, MenuController, CangkulPurchasePrompt, PetPurchasePrompt, AccessoryPurchasePrompt, TeleportClient, ProximityPromptScript, DailyRewardClient, Bestiary, InventarisClient, TempaClient, DialogModule |
+| [client-scripts.md](client-scripts.md) | DigClient, PetClient, ToolSlotClient, CursorClient, PurchasePromptHandler, TopbarClient, HotbarClient, AdminPanelClient |
+| [ui-scripts.md](ui-scripts.md) | UIController, NotificationClient, MenuController, CangkulPurchasePrompt, PetPurchasePrompt, AccessoryPurchasePrompt, TeleportClient, ProximityPromptScript, DailyRewardClient, Bestiary, InventarisClient, TempaClient, BuffsClient, DialogueUtils, TemplateProximity, WargaDialogue, PetSellerDialogue, GojekJametDialogue, PociDialogue, DialogModule |
 | [rewards.md](rewards.md) | Reward templates per layer, Register data, loot tables |
-| [utils.md](utils.md) | Utils library, ChangeColor module |
+| [utils.md](utils.md) | Utils library, ChangeColor module, ViewportIcon module |
 
 ## Key Architecture Facts
 - Grid: 16 studs/cell, X range -192..368, Z range 0..368, Y range 1584..-816
@@ -23,6 +23,7 @@ Terrain-based digging game. Players dig voxel terrain with Cangkul tools, collec
 - 6 terrain layers (top→bottom): Mud, Sand, Limestone, Ground, Slate, Basalt
 - 6 reward layers with 11 horror-themed treasures (2 per layer except Basalt with 1)
 - Mutation system: 3 mutations — Racun (5%, 1.3x, green), Darah (3%, 1.5x, red), SihirHitam (2%, 2.0x, purple). Chances boosted by accessory buffs (additive)
+- Pet system: multi-equip slots (max 3), slot-based positioning (right/left/behind), additive buff stacking (sum of all equipped pet buffs). Migration from old single-equip data. EquipSlots UI in PetsFrame shows 3D previews, click to unequip.
 - Accessory system: 2 sets (Tengkorak=Damage focus, Vampir=Speed focus), 5 items each, multi-stat buffs (damage/speed/luck/mutasi_racun/mutasi_darah/mutasi_sihir_hitam), 5 slots (Topi/Muka/Leher/Pinggang/Baju+Celana). Full set bonus (5 pieces): Tengkorak +30%Dmg +15%Racun, Vampir +30%Spd +15%Darah
 - Daily Reward: 7-day cycle (50/75/100/150/200/300/500 coins), 24h cooldown, 48h streak window
 - Custom Inventory + Hotbar: replaces default Backpack (deleted CedGo + Satchel + Purse systems)
@@ -39,6 +40,10 @@ Terrain-based digging game. Players dig voxel terrain with Cangkul tools, collec
 - TopbarPlus: "Hadiah Harian" button in topbar (TopbarClient → DailyRewardServer "RequestShow")
 - NotificationClient: listens TreasureInventoryEvent for ItemPickup, SellResult, LockItem (favorite), BagFull
 - Tempa (forging/upgrade): Anvil ProximityPrompt → TempaGui, upgrade Cangkul (+10 max, flat dmg/spd bonus) or Accessories (+5 max, 30%/lvl multiplier). Costs coins + treasure materials from bag. TempaServer validates + deducts + increments. DataSave: TempaLevels_Cangkul, TempaLevels_Accessory
+- ViewportIcon system: 3D model previews in all inventory UIs (Hotbar, Inventaris, Bestiary, MenuController). Uses stripped models from ReplicatedStorage.IconModels (Treasures/Cangkuls folders). Auto-fits camera based on bounding box, consistent angled view
+- Admin Panel: group rank auth (group 35484105, rank >= 2), semicolon (;) toggle, ServerLuck multiplier (x2/x4/x8 with timer), player lookup (online/offline), ban system (BanList_v1 DataStore), kick/TP
+- Dialogue system: DialogueUtils shared module in DialogueGUI provides cinematic bars, typewriter, camera focus, choices, mutual exclusion (DialogueActive attribute). 5 dialogue scripts: TemplateProximity (Petani), WargaDialogue (graveyard lore/tips), PetSellerDialogue (pet info), GojekJametDialogue (3-way, kingdom rumors, FocusCameraGroup), PociDialogue (cat meow). All use ProximityPrompt triggers on NPC torsos.
+- VFX folder renamed from "VFX" to "Efek Mutasi" in workspace; VFX cloning now clones individual ParticleEmitters instead of whole Part templates
 - All GUI text is in Indonesian (Bahasa Indonesia)
 
 ## Key Lessons

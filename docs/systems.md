@@ -19,9 +19,9 @@ type PlayerData = {
     Coins: number,
     EquippedCangkul: number,
     InventoryCangkul: {number},
-    EquippedPet: number?,
+    EquippedPets: {number},  -- array of pet IDs (max 3)
     InventoryPet: {number},
-    MaxPetEquip: number,   -- default 1
+    MaxPetEquip: number,   -- default 3
     MaxPetStorage: number, -- default 25
     Treasures: {TreasureEntry},
     Favorites: {number},             -- set of onlyIDs that are favorited
@@ -50,7 +50,7 @@ type PlayerData = {
 ## InventoryTreasure (`ServerScriptService.Systems.InventoryTreasure`)
 Requires: DataSave, ItemConfig, MutationConfig.
 
-Manages treasure items in player's bag (max 20 from ItemConfig.DefaultBagSize). Tools are only created for items assigned to hotbar slots.
+Manages treasure items in player's bag (max 20 from ItemConfig.DefaultBagSize). Tools are only created for items assigned to hotbar slots. HotbarSlots keys are normalized to numbers on access (DataStore JSON may convert to strings).
 
 **API:**
 - `AddTreasure(player, itemId, rewardModel)` → entry
@@ -73,23 +73,31 @@ Manages treasure items in player's bag (max 20 from ItemConfig.DefaultBagSize). 
 - `SetHotbarSlot(player, slot, onlyID)` — assign item to hotbar slot, creates Tool
 - `RemoveFromHotbar(player, onlyID)` — remove item from hotbar, destroys Tool
 
+**createTreasureTool(entry):**
+- Clones model from `workspace["Drop Items"]` (matching by ItemID attribute) instead of deleted ServerStorage.RewardTemplates
+- Clones all visible child parts (non-transparent BaseParts) with WeldConstraints into a Tool Handle
+- Applies mutation VFX: clones individual ParticleEmitters from `workspace["Efek Mutasi"]` folder (not whole Part template), applies color override + highlight + sparkle based on MutationConfig
+
 **Tool attributes set:** IsTreasure, OnlyID, ItemID, ItemName, Rarity, SellPrice, Mutation
 
 ---
 
 ## PetSystem (`ServerScriptService.Systems.PetSystem`)
-Requires: DataSave, PetConfig. Manages active pet models following players.
+Requires: DataSave, PetConfig. Manages active pet models following players. Supports multiple pets (up to 3) with slot-based positioning.
 
 **State:**
-- `activePets[player]` = { folder: Folder, models: {BasePart} }
-- `PET_OFFSETS` = 3 positions (right, left, top) for up to 3 pets
+- `activePets[player]` = { folder: Folder, groups: {{models: {BasePart}}} } — tracks pet groups per player
+- `SLOT_OFFSETS` = 3 positions (Slot 1: right X+2.5, Slot 2: left X-2.5, Slot 3: behind Z+3.0)
+- `PET_SUB_OFFSETS` = within-slot offsets for multi-meshpart pets (top/left/right)
 - PetTemplates has "Tuyul" and "3 Tuyul" (cloned from Tuyul). PetSystem looks up by `config.name`.
 
 **API:**
-- `SpawnPet(player, petId)` — removes old, creates folder `"PlayerName_Pets"` in workspace, clones from ServerStorage.PetTemplates, sets offset attributes, applies buff, fires PetEvent
-- `RemovePet(player)` — destroys folder, clears buff attributes
+- `SpawnPets(player, equippedPets)` — spawns multiple pets in slots, creates folder `"PlayerName_Pets"` in workspace, clones from ServerStorage.PetTemplates, applies slot-based offsets, returns success bool
+- `RemoveAllPets(player)` — destroys pet folder + orphaned folders, clears from activePets
+- `SpawnPet(player, petId)` — backward compat wrapper, spawns single pet via SpawnPets({petId})
+- `RemovePet(player)` — backward compat wrapper, calls RemoveAllPets
 
 **Auto-behavior:**
-- CharacterAdded: re-spawn equipped pet
-- PlayerRemoving: remove pet
-- PetEvent.OnServerEvent: handles EquipPet/UnequipPet/BuyPet (legacy path, PetShopServer is primary)
+- CharacterAdded: re-spawn equipped pets from `data.EquippedPets` array
+- PlayerRemoving: remove all pets
+- Legacy PetEvent handlers removed (EquipPet/UnequipPet/BuyPet now handled by PetShopServer)

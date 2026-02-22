@@ -14,7 +14,8 @@ Main digging handler. Requires: Config, ItemConfig, MutationConfig, VoxelEngine,
 - `getLayerHP(material)` / `getLayerSpeed(material)` / `getLayerName(y)` — layer lookups
 - `pickReward(layerName)` — weighted random from templates (chance out of 100)
 - `clearTerrain(center, size)` — WriteVoxels Air
-- `spawnReward(position, layerName, player)` — clone reward at destroyed voxel position, set attributes (HP/MaxHP/Speed/IsReward/ItemID/ItemName/Rarity), roll mutations (Racun 5%/Darah 3%/SihirHitam 2% + player accessory buffs → VFX + color/highlight/sparkle), auto-despawn after DespawnTime. Luck buff increases spawn chance multiplicatively.
+- `spawnReward(position, layerName, player)` — clone reward at destroyed voxel position, set attributes (HP/MaxHP/Speed/IsReward/ItemID/ItemName/Rarity), roll mutations (Racun 5%/Darah 3%/SihirHitam 2% + player accessory buffs → VFX from workspace["Efek Mutasi"] folder, clones individual ParticleEmitters + color/highlight/sparkle), auto-despawn after DespawnTime. Luck buff increases spawn chance multiplicatively.
+- `erodeTerrain(position, size)` — erodes terrain edges around destroyed voxel (directional, fixed startFromEnd logic for correct erosion direction)
 - `findRewardNear(hitPos)` — finds reward model within GRID distance
 - `findVoxelPart(pos)` — finds closest Part in workspace.Voxel
 - `getToolSpeed(character)` — reads tool Speed attribute
@@ -23,8 +24,8 @@ Main digging handler. Requires: Config, ItemConfig, MutationConfig, VoxelEngine,
 1. Validate: character, range, Vector3 types
 2. Find voxel Part, init hpTracker if needed
 3. Timing check: elapsed >= expectedCycle * 0.8
-4. Apply damage (DigDamage * PetBuff_damage * (1 + AccessoryBuff_damage), or tool Damage * PetBuff_damage * (1 + AccessoryBuff_damage))
-5. HP <= 0: clearTerrain, VoxelEngine.RemovePosition, Part:Destroy, GenerateBelow, spawnChance = 30% * (1 + luckBuff/100) → spawnReward(pos, layerName, player)
+4. Apply damage (DigDamage * PetBuff_damage * (1 + AccessoryBuff_damage/100), or tool Damage * PetBuff_damage * (1 + AccessoryBuff_damage/100))
+5. HP <= 0: clearTerrain, erodeTerrain, VoxelEngine.RemovePosition, Part:Destroy, GenerateBelow, spawnChance = `Config.Reward.SpawnChance * PetBuff_luck * (1 + AccessoryBuff_luck/100) * ServerLuckMultiplier` → spawnReward(pos, layerName, player). PetBuff_luck comes from pet buffLuck field (set by PetShopServer.applyPetBuff).
 6. HP > 0: FireClient(hp, maxHP, speed)
 
 **RewardDigEvent handler:**
@@ -46,13 +47,19 @@ Requires: Config. Manages voxel grid generation.
 - `generated[posKey]` = true or "destroyed" — tracks all generated positions
 - `surfaceColumns[colKey]` = true — which X,Z columns exist
 - `allColumns` = array of {x, z} — all column positions
+- `alivePerY[flooredY]` = count — alive voxels per Y-level (for cleanup)
 - `DEPTH_BUFFER = 3` — rows to pre-generate below
+- `CLEANUP_INTERVAL = 120` — seconds between destroyed entry cleanup
 
 **Functions:**
 - `GenerateSurface()` — Process pre-placed Parts in workspace.Voxel: fill terrain, make invisible guides, build column list, generate depth buffer (3 rows below surface for each column)
 - `GenerateBelow(position)` — When block destroyed at Y: generate +3 below for ALL columns (not just the destroyed one)
-- `RemovePosition(position)` — Mark as "destroyed" so it never regenerates
-- `createVoxel(x, y, z)` — Internal: create Part + terrain fill if not already generated
+- `RemovePosition(position)` — Mark as "destroyed", decrement alivePerY
+- `createVoxel(x, y, z)` — Internal: create Part + terrain fill if not already generated, increment alivePerY
+
+**Cleanup system (task.spawn loop every 120s):**
+- Find highest alive Y-level (`maxAliveY`)
+- Remove "destroyed" entries from `generated` where Y > maxAliveY (safe because blocks only generate downward)
 
 ---
 
@@ -94,9 +101,10 @@ Requires: DataSave, ToolConfig, GameEnum, TempaConfig.
 ---
 
 ## SellServer (`ServerScriptService.Handlers.SellServer`) [Script]
-Requires: DataSave, InventoryTreasure.
+Requires: DataSave, InventoryTreasure, ItemConfig.
 
-- SellEvent "SellAll": calls `RemoveAllNonFavorited` (preserves favorited items), add coins, FireClient result
+- SellEvent "SellAll": calls `RemoveAllNonFavorited` (preserves favorited items), add coins, FireClient result, fires TreasureInventoryEvent "SyncBag" to update hotbar
+- SellEvent "SellEquipped": removes equipped treasure tool, add coins, FireClient result, fires TreasureInventoryEvent "SyncBag"
 - 1s cooldown per player
 
 ---
@@ -104,10 +112,21 @@ Requires: DataSave, InventoryTreasure.
 ## PetShopServer (`ServerScriptService.Handlers.PetShopServer`) [Script]
 Requires: DataSave, PetConfig, GameEnum, PetSystem.
 
+Multi-pet equip system. Supports up to 3 equipped pets with additive buff stacking.
+
+**Key functions:**
+- `migrateEquippedPet(data)` — migration: converts old `data.EquippedPet` (single number) to `data.EquippedPets` (array)
+- `applyPetBuff(player, equippedPets)` — reads `buffSpeed`, `buffDamage`, `buffLuck` fields from PetConfig for each equipped pet (each field is a multiplier, e.g. 1.2 = +20%). Additive stacking: sums (value - 1) for each pet, final buff = 1 + sum. Sets `PetBuff_damage`, `PetBuff_speed`, and `PetBuff_luck` attributes on the player. PetBuff_luck is used by DigServer in spawnChance calculation.
+- `syncInventory(player)` — sends {inventory, equipped, maxEquip, maxStorage} to client via PetInventoryEvent "Sync". equipped is an array of pet IDs.
+
+**Handlers:**
+- PetPurchaseEvent "Purchase": validate coins, deduct, add to InventoryPet, auto-equip if slots available
+- PetInventoryEvent "RequestSync": call syncInventory
+- PetInventoryEvent "Equip": validate no duplicates, check slot count < maxEquip, append to EquippedPets, call applyPetBuff, spawn pets, FireClient "EquipResult" {name}
+- PetInventoryEvent "Unequip": takes petId parameter, removes from EquippedPets array, call applyPetBuff, remove pets, FireClient "UnequipResult" {name}
+- PetInventoryEvent "SlotFull": sent to client when all slots occupied (during equip attempt)
+- On join: waits for `OrderLoad_Pet` signal → migrate old data → apply buffs + spawn pets → sets `OrderDone_Pet`
 - Loads Register from workspace.Assets.Pets display models
-- PetPurchaseEvent: validate, deduct coins, add to InventoryPet, auto-equip + spawn
-- PetInventoryEvent: "RequestSync", "Equip" (spawn + buff + FireClient "EquipResult" {name}), "Unequip" (remove + clear buff + FireClient "UnequipResult" {name})
-- On join: waits for `OrderLoad_Pet` signal → apply equipped pet buff + spawn pet → sets `OrderDone_Pet`
 
 ---
 
@@ -212,10 +231,40 @@ Forging/upgrade system. Players upgrade Cangkul tools (max +10) and Accessories 
 - `consumeMaterials(player, data, materials)` — remove matching entries from bag (prefers non-favorited first)
 - `getTempaLevel(data, type, id)` → number — read TempaLevels_Cangkul/Accessory
 - `setTempaLevel(data, type, id, level)` — write tempa level
-- `buildSyncData(player)` → {cangkulLevels, accessoryLevels, coins, inventoryCangkul, inventoryAccessory, materialCounts}
+- `buildSyncData(player)` → {cangkulLevels, accessoryLevels, coins, inventoryCangkul, inventoryAccessory, materialCounts} — materialCounts uses string keys (tostring(itemId)) to avoid RemoteEvent numeric key serialization issues
 - `regiveCangkul(player, toolData, tempaLevel)` — destroy old tool, clone new with tempa bonus applied
 
 **Handlers (TempaEvent OnServerEvent):**
 - `"RequestSync"` → fire "Sync" with buildSyncData
-- `"TempaCangkul"`, toolId → validate ownership + level < max + coins + materials → deduct → increment → re-give if equipped → fire "TempaResult" + "Sync"
-- `"TempaAccessory"`, accId → validate ownership + level < max + coins + materials → deduct → increment → set TempaChanged attribute (triggers AccessoryShopServer recalc) → fire "TempaResult" + "Sync"
+- `"TempaCangkul"`, toolId → validate ownership + level < max + coins + materials → deduct → increment → re-give if equipped → fire "TempaResult" + "Sync" + TreasureInventoryEvent "SyncBag" (hotbar update)
+- `"TempaAccessory"`, accId → validate ownership + level < max + coins + materials → deduct → increment → set TempaChanged attribute (triggers AccessoryShopServer recalc) → fire "TempaResult" + "Sync" + TreasureInventoryEvent "SyncBag" (hotbar update)
+
+---
+
+## AdminPanelServer (`ServerScriptService.Handlers.AdminPanelServer`) [Script]
+Admin panel backend. Requires: DataSave. Uses AdminEvent RemoteEvent.
+
+**Auth:** GROUP_ID=35484105, MIN_RANK=2. Every request verified with `player:GetRankInGroup()`.
+
+**Server Luck System:**
+- `serverLuckMultiplier` (default 1), `luckExpireTime` (default 0), `adminLuckActive` flag
+- Sets `workspace:SetAttribute("ServerLuckMultiplier", mult)` — read by DigServer in spawn chance calc
+- Heartbeat checks: auto-reset when admin luck expires, then falls back to weekend if applicable
+- **Weekend auto-luck**: every Saturday+Sunday (GMT+7, `os.time() + 25200`), auto x2 if no admin override. Checked every 30s. Admin luck takes priority; on admin reset, weekend re-applies if still weekend.
+
+**Ban System:**
+- DataStore `BanList_v1`, key `"Ban_" .. userId`
+- Ban data: `{bannedBy, bannedAt, expireTime, reason, duration}`
+- `expireTime = 0` means permanent, otherwise `os.time()` based
+- Checked on `PlayerAdded` — kicks if active ban, removes if expired
+
+**Handlers (AdminEvent OnServerEvent):**
+- `"SetLuck"`, {multiplier, duration} → set workspace attr + timer (duration in minutes, max 480)
+- `"ResetLuck"` → reset multiplier to 1 immediately
+- `"LookupPlayer"`, {name} → search online players (partial match) → DataSave.GetData; offline → GetUserIdFromNameAsync + DataStore GetAsync. Returns player data summary.
+- `"Kick"`, {name} → `player:Kick("Ditendang oleh admin")`
+- `"TpToAdmin"`, {name} → PivotTo admin position + offset
+- `"TpToPlayer"`, {name} → PivotTo target position + offset
+- `"Ban"`, {name, duration} → GetUserIdFromNameAsync → banStore:SetAsync; kick if online
+- `"Unban"`, {name} → banStore:RemoveAsync
+- `"Sync"` → returns {multiplier, timeRemaining, playerCount}
